@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "financial-api"
+version = "0.1.0"
+description = ""
+authors = ["Marilia Franco <marilia.andrad@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.111.0"
+uvicorn = "^0.29.0"
+fastapi-limiter = "^0.1.6"
+redis = "^5.0.4"
+asyncio = "^3.4.3"
+aiocache = "^0.12.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
