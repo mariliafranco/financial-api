@@ -4,7 +4,7 @@ from aiocache import Cache, cached
 import asyncio
 from dotenv import load_dotenv
 
-load_dotenv()  
+load_dotenv()  # Load environment variables from .env file for local development
 
 ALPHA_VANTAGE_API_KEY = os.getenv("ALPHA_VANTAGE_API_KEY")
 COINGECKO_API_URL = "https://api.coingecko.com/api/v3"
@@ -32,11 +32,12 @@ async def get_equities_data(stocks: list[str] = None, cryptos: list[str] = None)
     stock_tasks = [get_stock_data(stock) for stock in stocks] if stocks else []
     crypto_tasks = [get_crypto_data(crypto) for crypto in cryptos] if cryptos else []
 
-    results = await asyncio.gather(*stock_tasks, *crypto_tasks)
+    stock_results = await asyncio.gather(*stock_tasks) if stock_tasks else []
+    crypto_results = await asyncio.gather(*crypto_tasks) if crypto_tasks else []
 
     if stocks:
-        result["stock_data"] = results[:len(stocks)]
+        result["stock_data"] = stock_results
     if cryptos:
-        result["crypto_data"] = results[len(stocks):]
+        result["crypto_data"] = crypto_results
 
     return result

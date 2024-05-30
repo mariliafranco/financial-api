@@ -9,7 +9,7 @@ from fastapi.websockets import WebSocketDisconnect
 import json
 from dotenv import load_dotenv
 
-load_dotenv() 
+load_dotenv()  # Load environment variables from .env file for local development
 
 app = FastAPI()
 
