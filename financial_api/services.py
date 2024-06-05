@@ -1,27 +1,63 @@
 import os
 import httpx
-from aiocache import Cache, cached
 import asyncio
 from dotenv import load_dotenv
+from datetime import datetime
 
-load_dotenv()  # Load environment variables from .env file for local development
+# Load environment variables from .env file
+load_dotenv()
 
+# Retrieve the API key from environment variables
 ALPHA_VANTAGE_API_KEY = os.getenv("ALPHA_VANTAGE_API_KEY")
 COINGECKO_API_URL = "https://api.coingecko.com/api/v3"
 
-@cached(ttl=3600, cache=Cache.REDIS)
+# Ensure the API key is loaded
+if not ALPHA_VANTAGE_API_KEY:
+    raise ValueError("Alpha Vantage API key is not set. Please check your .env file.")
+
 async def get_stock_data(symbol: str):
     url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={ALPHA_VANTAGE_API_KEY}"
     async with httpx.AsyncClient() as client:
         response = await client.get(url)
-        return response.json()
+        data = response.json()
+        print(f"Request URL for {symbol}: {url}")  # Debug: Print the request URL
+        print(f"Response Data for {symbol}: {data}")  # Debug: Print the response data
+        if 'Error Message' in data:
+            print(f"Error fetching data for {symbol}: {data['Error Message']}")
+            return {symbol: {"error": data['Error Message']}}
+        
+        # Extract the most recent daily data
+        time_series = data.get("Time Series (Daily)", {})
+        if time_series:
+            most_recent_date = max(time_series.keys(), key=lambda date: datetime.strptime(date, "%Y-%m-%d"))
+            most_recent_data = time_series[most_recent_date]
+            return {symbol: {most_recent_date: most_recent_data}}
+        else:
+            return {symbol: {"error": "No time series data available"}}
 
-@cached(ttl=3600, cache=Cache.REDIS)
 async def get_crypto_data(crypto: str):
     url = f"{COINGECKO_API_URL}/coins/markets?vs_currency=usd&ids={crypto}"
     async with httpx.AsyncClient() as client:
         response = await client.get(url)
-        return response.json()
+        data = response.json()
+        print(f"Request URL: {url}")  # Debug: Print the request URL
+        print(f"Response Data: {data}")  # Debug: Print the response data
+        if not data:
+            return {crypto: {"error": "No data available"}}
+        crypto_info = data[0]
+        filtered_data = {
+            "id": crypto_info["id"],
+            "symbol": crypto_info["symbol"],
+            "name": crypto_info["name"],
+            "current_price": crypto_info["current_price"],
+            "market_cap": crypto_info["market_cap"],
+            "total_volume": crypto_info["total_volume"],
+            "high_24h": crypto_info["high_24h"],
+            "low_24h": crypto_info["low_24h"],
+            "price_change_percentage_24h": crypto_info["price_change_percentage_24h"],
+            "last_updated": crypto_info["last_updated"]
+        }
+        return {crypto: filtered_data}
 
 async def get_equities_data(stocks: list[str] = None, cryptos: list[str] = None):
     result = {}
@@ -29,15 +65,17 @@ async def get_equities_data(stocks: list[str] = None, cryptos: list[str] = None)
     if not stocks and not cryptos:
         return {"error": "At least one of 'stocks' or 'cryptos' must be provided"}
 
+    # Create tasks for fetching stock and crypto data
     stock_tasks = [get_stock_data(stock) for stock in stocks] if stocks else []
     crypto_tasks = [get_crypto_data(crypto) for crypto in cryptos] if cryptos else []
 
+    # Gather results from all tasks
     stock_results = await asyncio.gather(*stock_tasks) if stock_tasks else []
     crypto_results = await asyncio.gather(*crypto_tasks) if crypto_tasks else []
 
     if stocks:
-        result["stock_data"] = stock_results
+        result["stock_data"] = {stock: data for stock_result in stock_results for stock, data in stock_result.items()}
     if cryptos:
-        result["crypto_data"] = crypto_results
+        result["crypto_data"] = {crypto: data for crypto_result in crypto_results for crypto, data in crypto_result.items()}
 
     return result
