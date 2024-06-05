@@ -7,26 +7,22 @@ from datetime import datetime
 # Load environment variables from .env file
 load_dotenv()
 
-# Retrieve the API key from environment variables
 ALPHA_VANTAGE_API_KEY = os.getenv("ALPHA_VANTAGE_API_KEY")
 COINGECKO_API_URL = "https://api.coingecko.com/api/v3"
 
-# Ensure the API key is loaded
-if not ALPHA_VANTAGE_API_KEY:
-    raise ValueError("Alpha Vantage API key is not set. Please check your .env file.")
 
 async def get_stock_data(symbol: str):
     url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={ALPHA_VANTAGE_API_KEY}"
     async with httpx.AsyncClient() as client:
         response = await client.get(url)
         data = response.json()
-        print(f"Request URL for {symbol}: {url}")  # Debug: Print the request URL
-        print(f"Response Data for {symbol}: {data}")  # Debug: Print the response data
+        print(f"Request URL for {symbol}: {url}")  
+        print(f"Response Data for {symbol}: {data}")  
         if 'Error Message' in data:
             print(f"Error fetching data for {symbol}: {data['Error Message']}")
             return {symbol: {"error": data['Error Message']}}
         
-        # Extract the most recent daily data
+        # Extract ONLY the most recent daily data
         time_series = data.get("Time Series (Daily)", {})
         if time_series:
             most_recent_date = max(time_series.keys(), key=lambda date: datetime.strptime(date, "%Y-%m-%d"))
@@ -40,8 +36,8 @@ async def get_crypto_data(crypto: str):
     async with httpx.AsyncClient() as client:
         response = await client.get(url)
         data = response.json()
-        print(f"Request URL: {url}")  # Debug: Print the request URL
-        print(f"Response Data: {data}")  # Debug: Print the response data
+        print(f"Request URL: {url}")  
+        print(f"Response Data: {data}")  
         if not data:
             return {crypto: {"error": "No data available"}}
         crypto_info = data[0]
@@ -65,11 +61,11 @@ async def get_equities_data(stocks: list[str] = None, cryptos: list[str] = None)
     if not stocks and not cryptos:
         return {"error": "At least one of 'stocks' or 'cryptos' must be provided"}
 
-    # Create tasks for fetching stock and crypto data
+    # Fetch each stock and crypto data
     stock_tasks = [get_stock_data(stock) for stock in stocks] if stocks else []
     crypto_tasks = [get_crypto_data(crypto) for crypto in cryptos] if cryptos else []
 
-    # Gather results from all tasks
+    # Return results from all data as our api response
     stock_results = await asyncio.gather(*stock_tasks) if stock_tasks else []
     crypto_results = await asyncio.gather(*crypto_tasks) if crypto_tasks else []
 

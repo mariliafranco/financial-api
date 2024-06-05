@@ -7,5 +7,5 @@ A FastAPI-based service providing real-time and historical data for stocks and c
 - Real-time stock data from Alpha Vantage
 - Cryptocurrency data from CoinGecko
 - Combined data endpoint for stocks and cryptocurrencies
-- Rate limiting to manage API usage
+<!-- - Rate limiting to manage API usage -->
 - WebSocket support for real-time updates
