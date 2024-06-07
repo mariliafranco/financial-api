@@ -3,9 +3,15 @@
   "builds": [
     {
       "src": "financial_api/main.py",
-      "use": "@vercel/python"
+      "use": "@vercel/python",
+      "config": {
+        "runtime": "python3.10"
+      }
     }
   ],
+  "env": {
+    "ALPHA_VANTAGE_API_KEY": "@alpha_vantage_api_key"
+  },
   "routes": [
     {
       "src": "/(.*)",
