@@ -51,10 +51,9 @@ pip install -r requirements.txt
 
 4. **Create a `.env` file:**
 
-# Claim your Alpha Vantage API key on `https://www.alphavantage.co/support/#api-key`
+Claim your Alpha Vantage API key on `https://www.alphavantage.co/support/#api-key`
 
-# Replace `your_alpha_vantage_api_key` with this generated Alpha Vantage API key
-
+Replace `your_alpha_vantage_api_key` with this generated Alpha Vantage API key
 ALPHA_VANTAGE_API_KEY=your_alpha_vantage_api_key
 
 ## Running the API Locally
