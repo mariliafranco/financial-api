@@ -21,14 +21,14 @@ cd financial-api
 
 2. **(Optional) Create and activate a virtual environment:**
 
-# For Windows:
+### For Windows:
 
 ```bash
 python -m venv venv
 venv\Scripts\activate
 ```
 
-# For Linux or MacOS:
+### For Linux or MacOS:
 
 ```bash
 python -m venv venv
@@ -37,13 +37,13 @@ source venv/bin/activate
 
 3. **Install Dependencies:**
 
-# If you are using Poetry:
+### If you are using Poetry:
 
 ```bash
 poetry install
 ```
 
-# If you are using pip:
+### If you are using pip:
 
 ```bash
 pip install -r requirements.txt
@@ -53,8 +53,8 @@ pip install -r requirements.txt
 
 Claim your Alpha Vantage API key on `https://www.alphavantage.co/support/#api-key`
 
-Replace `your_alpha_vantage_api_key` with this generated Alpha Vantage API key
-ALPHA_VANTAGE_API_KEY=your_alpha_vantage_api_key
+Replace `your_alpha_vantage_api_key` with this generated Alpha Vantage API key  
+_ALPHA_VANTAGE_API_KEY=your_alpha_vantage_api_key_
 
 ## Running the API Locally
 
@@ -65,9 +65,7 @@ uvicorn financial_api.main:app --reload
 ```
 
 2. **Access the API documentation:**
-   Open your browser and navigate to http://127.0.0.1:8000/docs.
-
-Open your browser and navigate to `http://127.0.0.1:8000/docs`.
+   Open your browser and navigate to `http://127.0.0.1:8000/docs`.
 
 ## Endpoints
 
@@ -138,7 +136,7 @@ curl -X GET "http://127.0.0.1:8000/equities-data?stocks=AAPL,GOOGL&cryptos=bitco
 
 ## Deployment
 
-This project is configured for deployment on Vercel. Ensure that your project is connected to your GitHub repository.
+This project is configured for deployment on Vercel, which calls for your project to be connected to your GitHub repository.
 
 1. **Push your code to GitHub:**
 
@@ -154,9 +152,9 @@ git push origin main
 - Go to the Vercel dashboard and connect your repository.
 - Set the environment variables, including `ALPHA_VANTAGE_API_KEY`.
 
-Vercel will automatically detect the changes and redeploy your project. Check the Vercel dashboard for deployment status and logs.
+Vercel will automatically detect the changes and redeploy your project.
 
 ## License
 
-This project is licensed under the MIT License.
-But that is going to change very soon 💅🏻
+This project is licensed under the MIT License.  
+_But that is going to change very soon_ 💅🏻
